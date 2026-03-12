@@ -153,12 +153,12 @@ function estimateRSSPayout(raBalance, age) {
   return raBalance / yearsRemaining / 12;
 }
 
-// --- Draw Lease Timeline + Bala's Curve Chart ---
+// --- Draw Lease Timeline Chart ---
 function drawBalasChart(remainingLease, retainedLease, marketValue, grossProceeds) {
   const canvas = document.getElementById("balas-chart");
   const dpr = window.devicePixelRatio || 1;
   const displayW = canvas.parentElement.clientWidth;
-  const displayH = Math.min(420, displayW * 0.72);
+  const displayH = 120;
   canvas.width = displayW * dpr;
   canvas.height = displayH * dpr;
   canvas.style.width = displayW + "px";
@@ -241,144 +241,14 @@ function drawBalasChart(remainingLease, retainedLease, marketValue, grossProceed
   ctx.lineTo(barLeft + retainW, barTop + barH);
   ctx.stroke();
 
-  // ==============================
-  // PART 2: Bala's Curve (below)
-  // Shows why the tail-end is worth less
-  // ==============================
-  const curveTop = barTop + barH + 30;
-  const pad = { top: curveTop, right: 20, bottom: 50, left: 55 };
-  const w = displayW - pad.left - pad.right;
-  const h = displayH - pad.top - pad.bottom;
-
-  const xScale = (years) => pad.left + (years / 99) * w;
-  const yScale = (pct) => pad.top + h - (pct / 100) * h;
-
-  // Grid lines
-  ctx.strokeStyle = "#e8ecf0";
-  ctx.lineWidth = 1;
-  for (let pct = 0; pct <= 100; pct += 20) {
-    ctx.beginPath();
-    ctx.moveTo(pad.left, yScale(pct));
-    ctx.lineTo(pad.left + w, yScale(pct));
-    ctx.stroke();
-  }
-  for (let yr = 0; yr <= 99; yr += 10) {
-    ctx.beginPath();
-    ctx.moveTo(xScale(yr), pad.top);
-    ctx.lineTo(xScale(yr), pad.top + h);
-    ctx.stroke();
-  }
-
-  // Draw the full curve
-  ctx.beginPath();
-  ctx.moveTo(xScale(0), yScale(0));
-  for (let yr = 0; yr <= 99; yr += 0.5) {
-    ctx.lineTo(xScale(yr), yScale(getLeaseValue(yr)));
-  }
-  ctx.strokeStyle = "#1a5276";
-  ctx.lineWidth = 2.5;
-  ctx.stroke();
-
-  // Vertical dashed lines at retained and remaining
-  ctx.setLineDash([5, 4]);
-  ctx.lineWidth = 1.5;
-
-  ctx.strokeStyle = "#2980b9";
-  ctx.beginPath();
-  ctx.moveTo(xScale(retainedLease), yScale(0));
-  ctx.lineTo(xScale(retainedLease), yScale(retainedFactor));
-  ctx.stroke();
-
-  ctx.strokeStyle = "#c0392b";
-  ctx.beginPath();
-  ctx.moveTo(xScale(remainingLease), yScale(0));
-  ctx.lineTo(xScale(remainingLease), yScale(remainingFactor));
-  ctx.stroke();
-
-  // Horizontal dashed lines at factor levels
-  ctx.strokeStyle = "#bbb";
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(pad.left, yScale(retainedFactor));
-  ctx.lineTo(xScale(retainedLease), yScale(retainedFactor));
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(pad.left, yScale(remainingFactor));
-  ctx.lineTo(xScale(remainingLease), yScale(remainingFactor));
-  ctx.stroke();
-
-  ctx.setLineDash([]);
-
-  // Dots on curve
-  function drawDot(x, y, color) {
-    ctx.beginPath();
-    ctx.arc(x, y, 5, 0, Math.PI * 2);
-    ctx.fillStyle = color;
-    ctx.fill();
-    ctx.strokeStyle = "#fff";
-    ctx.lineWidth = 2;
-    ctx.stroke();
-  }
-  drawDot(xScale(retainedLease), yScale(retainedFactor), "#2980b9");
-  drawDot(xScale(remainingLease), yScale(remainingFactor), "#c0392b");
-
-  // Curve point labels
-  ctx.textAlign = "center";
-  ctx.font = "bold 11px -apple-system, sans-serif";
-
-  ctx.fillStyle = "#2980b9";
-  ctx.fillText(`${retainedLease}yr = ${retainedFactor.toFixed(1)}%`, xScale(retainedLease), yScale(retainedFactor) - 10);
-
-  ctx.fillStyle = "#c0392b";
-  const remLabelX = Math.min(xScale(remainingLease), displayW - pad.right - 50);
-  ctx.fillText(`${remainingLease}yr = ${remainingFactor.toFixed(1)}%`, remLabelX, yScale(remainingFactor) - 10);
-
-  // Annotation: difference = value of tail-end
-  const midY = (yScale(retainedFactor) + yScale(remainingFactor)) / 2;
-  ctx.fillStyle = "#c0392b";
-  ctx.font = "11px -apple-system, sans-serif";
-  const diffPct = (remainingFactor - retainedFactor).toFixed(1);
-  ctx.fillText(`Difference: ${diffPct}%`, (xScale(retainedLease) + xScale(remainingLease)) / 2, midY);
-  ctx.fillText(`= value of tail-end`, (xScale(retainedLease) + xScale(remainingLease)) / 2, midY + 14);
-
-  // Axes
-  ctx.strokeStyle = "#aaa";
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(pad.left, pad.top);
-  ctx.lineTo(pad.left, pad.top + h);
-  ctx.lineTo(pad.left + w, pad.top + h);
-  ctx.stroke();
-
-  // X-axis labels
-  ctx.fillStyle = "#1a1a1a";
-  ctx.font = "11px -apple-system, sans-serif";
-  ctx.textAlign = "center";
-  for (let yr = 0; yr <= 99; yr += 10) {
-    ctx.fillText(yr.toString(), xScale(yr), pad.top + h + 16);
-  }
-  ctx.font = "bold 11px -apple-system, sans-serif";
-  ctx.fillText("Remaining Lease (years)", pad.left + w / 2, displayH - 6);
-
-  // Y-axis labels
-  ctx.textAlign = "right";
-  ctx.font = "11px -apple-system, sans-serif";
-  for (let pct = 0; pct <= 100; pct += 20) {
-    ctx.fillText(pct + "%", pad.left - 8, yScale(pct) + 4);
-  }
-  ctx.save();
-  ctx.translate(14, pad.top + h / 2);
-  ctx.rotate(-Math.PI / 2);
-  ctx.textAlign = "center";
-  ctx.font = "bold 11px -apple-system, sans-serif";
-  ctx.fillText("% of Freehold Value", 0, 0);
-  ctx.restore();
-
-  // Curve subtitle
+  // Explanation text below
   ctx.fillStyle = "#333";
   ctx.font = "11px -apple-system, sans-serif";
   ctx.textAlign = "center";
-  ctx.fillText("Bala's Curve — why the tail-end is worth less than the near-term", pad.left + w / 2, curveTop - 10);
+  ctx.fillText(
+    `The last ${tailYears} years of your ${remainingLease}-year lease are sold to HDB. You continue living in the flat for the first ${retainedLease} years.`,
+    displayW / 2, barTop + barH + 32
+  );
 }
 
 // --- Format currency ---

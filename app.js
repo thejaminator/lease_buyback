@@ -402,8 +402,9 @@ function updateLeaseOptions() {
 
   const remainingLease = parseInt(document.getElementById("remaining-lease").value) || 99;
   const allOptions = getLeaseOptions(youngestAge);
-  // Filter out options that exceed the remaining lease (must be strictly less)
-  const options = allOptions.filter(y => y < remainingLease);
+  // Must sell at least 20 years of tail-end lease, and retain less than remaining
+  const maxRetain = remainingLease - 20;
+  const options = allOptions.filter(y => y <= maxRetain);
 
   if (options.length === 0) {
     leaseRetainSelect.innerHTML = '<option value="">Remaining lease too short</option>';

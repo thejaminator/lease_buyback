@@ -4,33 +4,46 @@
 // ============================================================
 
 // --- Bala's Table (Lease Depreciation Curve) ---
-// Maps remaining lease years to percentage of freehold value.
-// Used to estimate the value of the tail-end lease sold to HDB.
+// Official per-year values from Singapore Land Authority.
+// Codified in the 7th Schedule of the Land Betterment Charge
+// (Table of Rates and Valuation Method) Regulations 2022.
+// Source: SLA, confirmed by SMU International Real Estate Review (2025).
 const BALAS_TABLE = {
-  0: 0, 5: 7, 10: 15, 15: 24, 20: 33, 25: 41,
-  30: 49, 35: 56, 40: 63, 45: 69, 50: 74,
-  55: 78, 60: 82, 65: 85, 70: 88, 75: 90,
-  80: 91, 85: 93, 90: 95, 95: 97, 99: 99
+  0: 0,
+  1: 3.8, 2: 7.5, 3: 10.9, 4: 14.1, 5: 17.1,
+  6: 19.9, 7: 22.7, 8: 25.2, 9: 27.7, 10: 30.0,
+  11: 32.2, 12: 34.3, 13: 36.3, 14: 38.2, 15: 40.0,
+  16: 41.8, 17: 43.4, 18: 45.0, 19: 46.6, 20: 48.0,
+  21: 49.5, 22: 50.8, 23: 52.1, 24: 53.4, 25: 54.6,
+  26: 55.8, 27: 56.9, 28: 58.0, 29: 59.0, 30: 60.0,
+  31: 61.0, 32: 61.9, 33: 62.8, 34: 63.7, 35: 64.6,
+  36: 65.4, 37: 66.2, 38: 67.0, 39: 67.7, 40: 68.5,
+  41: 69.2, 42: 69.8, 43: 70.5, 44: 71.2, 45: 71.8,
+  46: 72.4, 47: 73.0, 48: 73.6, 49: 74.1, 50: 74.7,
+  51: 75.2, 52: 75.7, 53: 76.2, 54: 76.7, 55: 77.3,
+  56: 77.9, 57: 78.5, 58: 79.0, 59: 79.5, 60: 80.0,
+  61: 80.6, 62: 81.2, 63: 81.8, 64: 82.4, 65: 83.0,
+  66: 83.6, 67: 84.2, 68: 84.5, 69: 85.4, 70: 86.0,
+  71: 86.5, 72: 87.0, 73: 87.5, 74: 88.0, 75: 88.5,
+  76: 89.0, 77: 89.5, 78: 90.0, 79: 90.5, 80: 91.0,
+  81: 91.4, 82: 91.8, 83: 92.2, 84: 92.6, 85: 92.9,
+  86: 93.3, 87: 93.6, 88: 94.0, 89: 94.3, 90: 94.6,
+  91: 94.8, 92: 95.0, 93: 95.2, 94: 95.4, 95: 95.6,
+  96: 95.7, 97: 95.8, 98: 95.9, 99: 96.0
 };
 
 function getLeaseValue(years) {
   if (years <= 0) return 0;
-  if (years >= 99) return 99;
+  if (years >= 99) return BALAS_TABLE[99];
 
-  const keys = Object.keys(BALAS_TABLE).map(Number).sort((a, b) => a - b);
-  let lower = 0, upper = 99;
-  for (let i = 0; i < keys.length - 1; i++) {
-    if (years >= keys[i] && years <= keys[i + 1]) {
-      lower = keys[i];
-      upper = keys[i + 1];
-      break;
-    }
-  }
+  const floored = Math.floor(years);
+  const frac = years - floored;
+  if (frac === 0) return BALAS_TABLE[floored];
 
-  const lowerVal = BALAS_TABLE[lower];
-  const upperVal = BALAS_TABLE[upper];
-  const ratio = (years - lower) / (upper - lower);
-  return lowerVal + ratio * (upperVal - lowerVal);
+  // Interpolate for fractional years
+  const lower = BALAS_TABLE[floored] || 0;
+  const upper = BALAS_TABLE[floored + 1] || lower;
+  return lower + frac * (upper - lower);
 }
 
 function calculateGrossProceeds(marketValue, remainingLease, retainedLease) {
@@ -87,19 +100,38 @@ function getLeaseOptions(youngestAge) {
 }
 
 // --- CPF LIFE Monthly Payout Estimate ---
-// Rough estimates based on CPF LIFE Standard Plan.
-// Actual payouts depend on many factors.
+// Based on CPF LIFE Standard Plan payout examples (CPF Board, 2025/2026).
+// Reference: CPF LIFE Payout Examples PDF from cpf.gov.sg
+// 2026 BRS $110,200 -> ~$950/mo, FRS $220,400 -> ~$1,780/mo at age 65.
+// Deferring payouts past 65 increases them by ~7% per year (up to age 70).
+// These are estimates only — actual payouts depend on individual circumstances.
 function estimateMonthlyPayout(raBalance, age) {
   if (raBalance < 60000) return null; // Not eligible (T&C 2.4b)
   if (age >= 80) return null; // Not eligible (T&C 2.4e)
 
-  const payoutRates = {
-    65: 5.8, 66: 6.0, 67: 6.2, 68: 6.4, 69: 6.7,
-    70: 7.0, 71: 7.3, 72: 7.6, 73: 8.0, 74: 8.4,
-    75: 8.8, 76: 9.3, 77: 9.8, 78: 10.3, 79: 10.9
-  };
-  const rate = payoutRates[Math.min(age, 79)] || 5.8;
-  return (raBalance / 1000) * rate;
+  // Base payout rate at age 65: derived from CPF examples
+  // BRS $110,200 -> $950/mo = $8.62 per $1,000
+  // FRS $220,400 -> $1,780/mo = $8.08 per $1,000
+  // Use a sliding scale: higher RA -> slightly lower rate per $1,000 (diminishing returns)
+  let baseRate;
+  if (raBalance <= 110200) {
+    baseRate = 8.62; // BRS-level rate
+  } else if (raBalance <= 220400) {
+    // Interpolate between BRS rate and FRS rate
+    const t = (raBalance - 110200) / (220400 - 110200);
+    baseRate = 8.62 - t * (8.62 - 8.08);
+  } else {
+    baseRate = 8.08; // FRS+ rate
+  }
+
+  // Deferral bonus: ~7% increase per year deferred past 65, up to age 70
+  let deferralMultiplier = 1.0;
+  if (age > 65) {
+    const deferYears = Math.min(age - 65, 5);
+    deferralMultiplier = Math.pow(1.07, deferYears);
+  }
+
+  return (raBalance / 1000) * baseRate * deferralMultiplier;
 }
 
 // --- Retirement Sum Scheme estimate for 80+ ---
@@ -424,7 +456,10 @@ form.addEventListener("submit", (e) => {
   // STEP 1: Calculate gross & net proceeds
   // ==========================================
   const tailYears = remainingLease - retainedLease;
-  const grossProceeds = calculateGrossProceeds(marketValue, remainingLease, retainedLease);
+  const overrideProceeds = parseFloat(document.getElementById("override-proceeds").value);
+  const balasEstimate = calculateGrossProceeds(marketValue, remainingLease, retainedLease);
+  const grossProceeds = overrideProceeds > 0 ? overrideProceeds : balasEstimate;
+  const usingOverride = overrideProceeds > 0;
 
   // HDB deducts outstanding payments (T&C 1.4c)
   const totalDeductions = outstandingLoan + upgradingCost + adminFees;
@@ -543,6 +578,24 @@ form.addEventListener("submit", (e) => {
 
   // --- Sale Proceeds ---
   document.getElementById("res-tail-years").textContent = `${tailYears} years`;
+
+  // Show Bala's estimate vs override
+  const balasRow = document.getElementById("res-balas-est-row");
+  const proceedsNote = document.getElementById("res-proceeds-note");
+  const proceedsLabel = document.getElementById("res-proceeds-label");
+
+  document.getElementById("res-balas-est").textContent = fmt(balasEstimate);
+
+  if (usingOverride) {
+    balasRow.classList.remove("hidden");
+    proceedsLabel.textContent = "HDB's quoted sale price (used)";
+    proceedsNote.textContent = "";
+  } else {
+    balasRow.classList.add("hidden");
+    proceedsLabel.textContent = "Gross sale proceeds (est.)";
+    proceedsNote.textContent = "Estimated using Bala's Table. HDB's actual valuation may differ. If HDB has given you a price, enter it above for a more accurate calculation.";
+  }
+
   document.getElementById("res-proceeds").textContent = fmt(grossProceeds);
 
   const showRow = (id, amount, label) => {

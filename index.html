@@ -14,75 +14,102 @@
       <p class="disclaimer">Based on rates effective from 1 Jan 2026. Estimates are for reference only.</p>
     </header>
 
-    <!-- Eligibility Overview -->
-    <section class="card eligibility-card">
-      <h2>Eligibility at a Glance</h2>
-      <div class="eligibility-grid">
-        <div class="elig-item">
-          <span class="elig-label">Owner Age</span>
-          <span class="elig-value">65 years old and above</span>
-        </div>
-        <div class="elig-item">
-          <span class="elig-label">Flat Type</span>
-          <span class="elig-value">HDB flats (3-room to 5-room or bigger)</span>
-        </div>
-        <div class="elig-item">
-          <span class="elig-label">Citizenship</span>
-          <span class="elig-value">At least 1 Singapore Citizen owner</span>
-        </div>
-      </div>
+    <!-- Key Terms & Reference Info -->
+    <section class="card glossary-section">
+      <h2>Key Terms</h2>
+      <dl class="glossary">
+        <dt>FRS &mdash; Full Retirement Sum</dt>
+        <dd>The CPF savings needed in your Retirement Account (RA) to receive higher monthly payouts under CPF LIFE. Sole owners must top up to the age-adjusted FRS. For 2026: $220,400 (age 65&ndash;69), $210,400 (age 70&ndash;79), $200,400 (age 80+).</dd>
 
-      <table class="age-table">
-        <caption>Lease Retention Options by Age</caption>
-        <thead>
-          <tr>
-            <th>Youngest Owner's Age</th>
-            <th>Minimum Lease Retained</th>
-            <th>Other Options</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>65 &ndash; 69</td><td>30 years</td><td>35</td></tr>
-          <tr><td>70 &ndash; 74</td><td>25 years</td><td>30, 35</td></tr>
-          <tr><td>75 &ndash; 79</td><td>20 years</td><td>25, 30, 35</td></tr>
-          <tr><td>80 and above</td><td>15 years</td><td>20, 25, 30, 35</td></tr>
-        </tbody>
-      </table>
+        <dt>BRS &mdash; Basic Retirement Sum</dt>
+        <dd>Half of the FRS. For households with 2 or more owners, each owner tops up to the age-adjusted BRS. For 2026: $110,200 (age 65&ndash;69), $105,200 (age 70&ndash;79), $100,200 (age 80+).</dd>
 
-      <table class="age-table">
-        <caption>CPF RA Top-up Requirements (2026)</caption>
-        <thead>
-          <tr>
-            <th>Owner's Age</th>
-            <th>Sole Owner (FRS)</th>
-            <th>2+ Owners (BRS each)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>65 &ndash; 69</td><td>$220,400</td><td>$110,200</td></tr>
-          <tr><td>70 &ndash; 79</td><td>$210,400</td><td>$105,200</td></tr>
-          <tr><td>80 and above</td><td>$200,400</td><td>$100,200</td></tr>
-        </tbody>
-      </table>
+        <dt>RA &mdash; Retirement Account</dt>
+        <dd>A CPF account created at age 55 by combining savings from your Special Account and Ordinary Account. Your RA savings are used for retirement payouts under CPF LIFE or the Retirement Sum Scheme.</dd>
+
+        <dt>CPF LIFE</dt>
+        <dd>A national annuity scheme that provides monthly payouts for life. Owners below 80 with at least $60,000 in their RA after the LBS top-up must join CPF LIFE. The entire RA balance is used as premium.</dd>
+
+        <dt>RSS &mdash; Retirement Sum Scheme</dt>
+        <dd>For owners aged 80+ who are not eligible for CPF LIFE. Provides monthly payouts from the RA until the balance is depleted (not lifelong).</dd>
+
+        <dt>LBS Bonus</dt>
+        <dd>A cash bonus from HDB based on flat type and total CPF top-up amount. Full bonus if total top-up &ge; $60,000; otherwise pro-rated. Up to $30,000 (3-room), $15,000 (4-room), $7,500 (5-room).</dd>
+
+        <dt>Bala's Table (Lease Depreciation Curve)</dt>
+        <dd>The official table used to value leasehold property in Singapore. Codified in the 7th Schedule of the Land Betterment Charge Regulations 2022, originally created around 1948 by a Land Office employee named Bala. Leasehold property does not lose value in a straight line &mdash; it depreciates faster as the lease gets shorter. For example, a 65-year lease retains 83.0% of freehold value, while a 30-year lease retains 60.0%. This calculator uses the full per-year table (all 99 values from SLA) to estimate sale proceeds: <code>Proceeds = Market Value &times; (Factor(remaining) &minus; Factor(retained)) / Factor(remaining)</code>.</dd>
+
+        <dt>Manner of Holding</dt>
+        <dd><strong>Joint Tenancy:</strong> Equal ownership (50/50). Proceeds disbursed as a single cheque in joint names. <strong>Tenancy-in-Common:</strong> Ownership in specified shares. Proceeds split and disbursed as separate cheques.</dd>
+      </dl>
+
+      <!-- Bala's Table -->
       <details class="balas-details">
-        <summary>Bala's Table &mdash; Lease Depreciation Values</summary>
+        <summary>Bala's Table &mdash; Official Lease Depreciation Values (SLA)</summary>
+        <p class="balas-source">Source: Singapore Land Authority. Codified in the 7th Schedule of the Land Betterment Charge (Table of Rates and Valuation Method) Regulations 2022.</p>
         <table class="age-table balas-table">
           <thead>
+            <tr><th>Yr</th><th>%</th><th>Yr</th><th>%</th><th>Yr</th><th>%</th><th>Yr</th><th>%</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>99</td><td>96.0</td><td>74</td><td>88.0</td><td>49</td><td>74.1</td><td>24</td><td>53.4</td></tr>
+            <tr><td>95</td><td>95.6</td><td>70</td><td>86.0</td><td>45</td><td>71.8</td><td>20</td><td>48.0</td></tr>
+            <tr><td>90</td><td>94.6</td><td>65</td><td>83.0</td><td>40</td><td>68.5</td><td>15</td><td>40.0</td></tr>
+            <tr><td>85</td><td>92.9</td><td>60</td><td>80.0</td><td>35</td><td>64.6</td><td>10</td><td>30.0</td></tr>
+            <tr><td>80</td><td>91.0</td><td>55</td><td>77.3</td><td>30</td><td>60.0</td><td>5</td><td>17.1</td></tr>
+          </tbody>
+        </table>
+        <p class="balas-source">Full per-year values (1&ndash;99) are used in the calculator. Above shows key milestones.</p>
+      </details>
+
+      <!-- Eligibility at a Glance (expandable) -->
+      <details class="eligibility-details">
+        <summary>Eligibility at a Glance</summary>
+        <div class="eligibility-grid">
+          <div class="elig-item">
+            <span class="elig-label">Owner Age</span>
+            <span class="elig-value">65 years old and above</span>
+          </div>
+          <div class="elig-item">
+            <span class="elig-label">Flat Type</span>
+            <span class="elig-value">HDB flats (3-room to 5-room or bigger)</span>
+          </div>
+          <div class="elig-item">
+            <span class="elig-label">Citizenship</span>
+            <span class="elig-value">At least 1 Singapore Citizen owner</span>
+          </div>
+        </div>
+
+        <table class="age-table">
+          <caption>Lease Retention Options by Age</caption>
+          <thead>
             <tr>
-              <th>Years Left</th><th>Value %</th><th>Years Left</th><th>Value %</th>
+              <th>Youngest Owner's Age</th>
+              <th>Minimum Lease Retained</th>
+              <th>Other Options</th>
             </tr>
           </thead>
           <tbody>
-            <tr><td>99</td><td>99%</td><td>45</td><td>69%</td></tr>
-            <tr><td>95</td><td>97%</td><td>40</td><td>63%</td></tr>
-            <tr><td>90</td><td>95%</td><td>35</td><td>56%</td></tr>
-            <tr><td>85</td><td>93%</td><td>30</td><td>49%</td></tr>
-            <tr><td>80</td><td>91%</td><td>25</td><td>41%</td></tr>
-            <tr><td>75</td><td>90%</td><td>20</td><td>33%</td></tr>
-            <tr><td>70</td><td>88%</td><td>15</td><td>24%</td></tr>
-            <tr><td>65</td><td>85%</td><td>10</td><td>15%</td></tr>
-            <tr><td>60</td><td>82%</td><td>5</td><td>7%</td></tr>
-            <tr><td>55</td><td>78%</td><td>0</td><td>0%</td></tr>
+            <tr><td>65 &ndash; 69</td><td>30 years</td><td>35</td></tr>
+            <tr><td>70 &ndash; 74</td><td>25 years</td><td>30, 35</td></tr>
+            <tr><td>75 &ndash; 79</td><td>20 years</td><td>25, 30, 35</td></tr>
+            <tr><td>80 and above</td><td>15 years</td><td>20, 25, 30, 35</td></tr>
+          </tbody>
+        </table>
+
+        <table class="age-table">
+          <caption>CPF RA Top-up Requirements (2026)</caption>
+          <thead>
+            <tr>
+              <th>Owner's Age</th>
+              <th>Sole Owner (FRS)</th>
+              <th>2+ Owners (BRS each)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>65 &ndash; 69</td><td>$220,400</td><td>$110,200</td></tr>
+            <tr><td>70 &ndash; 79</td><td>$210,400</td><td>$105,200</td></tr>
+            <tr><td>80 and above</td><td>$200,400</td><td>$100,200</td></tr>
           </tbody>
         </table>
       </details>
@@ -111,6 +138,12 @@
         <div class="field">
           <label for="remaining-lease">Remaining Lease (years)</label>
           <input type="number" id="remaining-lease" placeholder="e.g. 65" min="20" max="99" required>
+        </div>
+
+        <div class="field">
+          <label for="override-proceeds">HDB's Quoted Sale Price (optional, $)</label>
+          <input type="number" id="override-proceeds" placeholder="Leave blank to estimate using Bala's Table" min="0" step="1000">
+          <span class="field-hint">If HDB has given you a sale price, enter it here. Otherwise the calculator will estimate using Bala's Table. Note: HDB's internal valuation may differ from Bala's Table estimates.</span>
         </div>
       </section>
 
@@ -243,10 +276,15 @@
           <span>Tail-end lease sold to HDB</span>
           <span id="res-tail-years" class="result-value"></span>
         </div>
+        <div class="result-row" id="res-balas-est-row">
+          <span>Bala's Table estimate</span>
+          <span id="res-balas-est" class="result-value"></span>
+        </div>
         <div class="result-row">
-          <span>Gross sale proceeds (est.)</span>
+          <span id="res-proceeds-label">Gross sale proceeds</span>
           <span id="res-proceeds" class="result-value highlight"></span>
         </div>
+        <div id="res-proceeds-note" class="result-note"></div>
         <div class="result-row hidden" id="res-loan-row">
           <span>Less: Outstanding mortgage loan</span>
           <span id="res-loan" class="result-value deduction"></span>
@@ -341,36 +379,6 @@
       </div>
 
       <p class="disclaimer">This calculator provides estimates only. Actual amounts depend on HDB's valuation and CPF Board's assessment. Flat owners bear their own legal costs (T&C 3.1). Please consult HDB for the official computation.</p>
-    </section>
-
-    <!-- Key Terms -->
-    <section class="card glossary-section">
-      <h2>Key Terms</h2>
-      <dl class="glossary">
-        <dt>FRS &mdash; Full Retirement Sum</dt>
-        <dd>The CPF savings needed in your Retirement Account (RA) to receive higher monthly payouts under CPF LIFE. Sole owners must top up to the age-adjusted FRS. For 2026: $220,400 (age 65&ndash;69), $210,400 (age 70&ndash;79), $200,400 (age 80+).</dd>
-
-        <dt>BRS &mdash; Basic Retirement Sum</dt>
-        <dd>Half of the FRS. For households with 2 or more owners, each owner tops up to the age-adjusted BRS. For 2026: $110,200 (age 65&ndash;69), $105,200 (age 70&ndash;79), $100,200 (age 80+).</dd>
-
-        <dt>RA &mdash; Retirement Account</dt>
-        <dd>A CPF account created at age 55 by combining savings from your Special Account and Ordinary Account. Your RA savings are used for retirement payouts under CPF LIFE or the Retirement Sum Scheme.</dd>
-
-        <dt>CPF LIFE</dt>
-        <dd>A national annuity scheme that provides monthly payouts for life. Owners below 80 with at least $60,000 in their RA after the LBS top-up must join CPF LIFE. The entire RA balance is used as premium.</dd>
-
-        <dt>RSS &mdash; Retirement Sum Scheme</dt>
-        <dd>For owners aged 80+ who are not eligible for CPF LIFE. Provides monthly payouts from the RA until the balance is depleted (not lifelong).</dd>
-
-        <dt>LBS Bonus</dt>
-        <dd>A cash bonus from HDB based on flat type and total CPF top-up amount. Full bonus if total top-up &ge; $60,000; otherwise pro-rated. Up to $30,000 (3-room), $15,000 (4-room), $7,500 (5-room).</dd>
-
-        <dt>Bala's Table (Lease Depreciation Curve)</dt>
-        <dd>Used to estimate the value of the tail-end lease sold to HDB. Leasehold property does not lose value in a straight line &mdash; it depreciates slowly in early years and more steeply as the lease shortens. Bala's Table, originally derived by property valuer Bala Murugan, maps remaining lease years to a percentage of freehold value. For example, a 65-year lease retains about 85% of freehold value, while a 30-year lease retains about 49%. This calculator uses these factors to estimate sale proceeds: <code>Proceeds = Market Value &times; (Factor(remaining) &minus; Factor(retained)) / Factor(remaining)</code>.</dd>
-
-        <dt>Manner of Holding</dt>
-        <dd><strong>Joint Tenancy:</strong> Equal ownership (50/50). Proceeds disbursed as a single cheque in joint names. <strong>Tenancy-in-Common:</strong> Ownership in specified shares. Proceeds split and disbursed as separate cheques.</dd>
-      </dl>
     </section>
 
     <!-- T&C Reference -->

@@ -7,21 +7,22 @@
 :root {
   --primary: #1a5276;
   --primary-light: #2980b9;
-  --accent: #e74c3c;
+  --accent: #c0392b;
   --bg: #f5f7fa;
   --card-bg: #ffffff;
-  --text: #2c3e50;
-  --text-light: #7f8c8d;
-  --border: #dce1e8;
-  --success: #27ae60;
-  --warning: #d4a017;
+  --text: #1a1a1a;
+  --text-secondary: #333333;
+  --border: #c8cfd8;
+  --success: #1e8449;
+  --warning: #b7950b;
 }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   background: var(--bg);
   color: var(--text);
-  line-height: 1.6;
+  line-height: 1.7;
+  font-size: 16px;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -43,14 +44,14 @@ header h1 {
 }
 
 .subtitle {
-  font-size: 0.95rem;
-  color: var(--text-light);
+  font-size: 1rem;
+  color: var(--text);
   margin-bottom: 4px;
 }
 
 .disclaimer {
-  font-size: 0.8rem;
-  color: var(--text-light);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
   font-style: italic;
   margin-top: 8px;
 }
@@ -64,7 +65,7 @@ header h1 {
 }
 
 .card h2 {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   color: var(--primary);
   margin-bottom: 16px;
   padding-bottom: 8px;
@@ -72,7 +73,7 @@ header h1 {
 }
 
 .card h3 {
-  font-size: 0.95rem;
+  font-size: 1rem;
   color: var(--primary);
   margin: 16px 0 8px;
 }
@@ -87,7 +88,7 @@ header h1 {
 
 .field label {
   display: block;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--text);
   margin-bottom: 4px;
@@ -96,10 +97,10 @@ header h1 {
 .field input,
 .field select {
   width: 100%;
-  padding: 10px 12px;
-  border: 1.5px solid var(--border);
+  padding: 12px 14px;
+  border: 2px solid var(--border);
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 1.05rem;
   color: var(--text);
   background: #fff;
   transition: border-color 0.2s;
@@ -110,13 +111,13 @@ header h1 {
 .field select:focus {
   outline: none;
   border-color: var(--primary-light);
-  box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.1);
+  box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.15);
 }
 
 .field-hint {
   display: block;
-  font-size: 0.78rem;
-  color: var(--text-light);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
   margin-top: 3px;
 }
 
@@ -131,21 +132,22 @@ header h1 {
 }
 
 .help-text {
-  font-size: 0.85rem;
-  color: var(--text-light);
+  font-size: 0.95rem;
+  color: var(--text-secondary);
   margin-bottom: 12px;
 }
 
 .owner-section {
-  padding: 12px;
+  padding: 14px;
   background: var(--bg);
   border-radius: 8px;
   margin-bottom: 12px;
+  border: 1px solid var(--border);
 }
 
 .owner-section h3 {
   margin: 0 0 10px;
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 .hidden {
@@ -154,13 +156,13 @@ header h1 {
 
 .btn-calculate {
   width: 100%;
-  padding: 14px;
+  padding: 16px;
   background: var(--primary);
   color: #fff;
   border: none;
   border-radius: 12px;
-  font-size: 1.05rem;
-  font-weight: 600;
+  font-size: 1.1rem;
+  font-weight: 700;
   cursor: pointer;
   transition: background 0.2s;
   margin-bottom: 16px;
@@ -191,10 +193,11 @@ header h1 {
 }
 
 .result-group h3 {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: var(--text-light);
+  color: var(--text-secondary);
+  font-weight: 700;
   margin-bottom: 10px;
 }
 
@@ -203,12 +206,13 @@ header h1 {
   justify-content: space-between;
   align-items: center;
   padding: 6px 0;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
 }
 
 .result-value {
-  font-weight: 600;
+  font-weight: 700;
   text-align: right;
+  color: var(--text);
 }
 
 .result-value.highlight {
@@ -216,7 +220,7 @@ header h1 {
 }
 
 .result-value.big {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
 }
 
 .result-value.deduction {
@@ -224,17 +228,17 @@ header h1 {
 }
 
 .result-note {
-  font-size: 0.8rem;
-  color: var(--text-light);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
   font-style: italic;
   padding: 2px 0;
 }
 
 .total-row {
-  border-top: 1px dashed var(--border);
+  border-top: 2px dashed var(--border);
   padding-top: 8px;
   margin-top: 4px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .summary-box {
@@ -246,7 +250,7 @@ header h1 {
 }
 
 .summary-box h3 {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .summary-box .result-row {
@@ -282,7 +286,7 @@ header h1 {
   background: #fef9e7;
   border-radius: 8px;
   padding: 16px;
-  border: 1px solid #f9e79f;
+  border: 2px solid #f0d861;
 }
 
 .restrictions h3 {
@@ -295,11 +299,12 @@ header h1 {
 }
 
 .restriction-list li {
-  font-size: 0.85rem;
-  padding: 5px 0;
-  padding-left: 16px;
+  font-size: 0.95rem;
+  padding: 6px 0;
+  padding-left: 20px;
   position: relative;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  color: var(--text);
 }
 
 .restriction-list li:last-child {
@@ -310,27 +315,37 @@ header h1 {
   content: "\26A0";
   position: absolute;
   left: 0;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
 }
 
-/* Eligibility Card */
-.eligibility-card {
-  border-left: 4px solid var(--primary);
+/* Eligibility (expandable inside Key Terms) */
+.eligibility-details {
+  margin-top: 16px;
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+}
+
+.eligibility-details summary {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--primary);
+  cursor: pointer;
+  padding: 6px 0;
 }
 
 .eligibility-grid {
   display: grid;
   gap: 8px;
-  margin-bottom: 16px;
+  margin: 12px 0 16px;
 }
 
 .elig-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 0;
+  padding: 8px 0;
   border-bottom: 1px solid var(--border);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
 }
 
 .elig-item:last-child {
@@ -338,25 +353,25 @@ header h1 {
 }
 
 .elig-label {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text);
 }
 
 .elig-value {
   color: var(--primary);
-  font-weight: 500;
+  font-weight: 600;
   text-align: right;
 }
 
 .age-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   margin-top: 12px;
 }
 
 .age-table caption {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--primary);
   text-align: left;
@@ -368,33 +383,41 @@ header h1 {
   background: var(--bg);
   padding: 8px 10px;
   text-align: left;
-  font-weight: 600;
-  font-size: 0.8rem;
-  color: var(--text-light);
-  border-bottom: 1px solid var(--border);
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  border-bottom: 2px solid var(--border);
 }
 
 .age-table td {
-  padding: 7px 10px;
+  padding: 8px 10px;
   border-bottom: 1px solid var(--border);
+  color: var(--text);
 }
 
 .age-table tbody tr:last-child td {
   border-bottom: none;
 }
 
+/* Bala's Table details */
 .balas-details {
-  margin-top: 12px;
+  margin-top: 16px;
   border-top: 1px solid var(--border);
   padding-top: 8px;
 }
 
 .balas-details summary {
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.95rem;
+  font-weight: 700;
   color: var(--primary);
   cursor: pointer;
-  padding: 4px 0;
+  padding: 6px 0;
+}
+
+.balas-source {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 6px 0;
 }
 
 .balas-table {
@@ -404,7 +427,7 @@ header h1 {
 .balas-table td,
 .balas-table th {
   text-align: center;
-  padding: 5px 8px;
+  padding: 6px 8px;
 }
 
 /* Glossary */
@@ -418,10 +441,10 @@ header h1 {
 
 .glossary dt {
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: var(--primary);
-  margin-top: 12px;
-  padding-top: 10px;
+  margin-top: 14px;
+  padding-top: 12px;
   border-top: 1px solid var(--border);
 }
 
@@ -432,11 +455,19 @@ header h1 {
 }
 
 .glossary dd {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: var(--text);
   margin-left: 0;
   margin-top: 2px;
   padding-bottom: 4px;
+}
+
+.glossary dd code {
+  background: var(--bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: var(--text);
 }
 
 /* T&C Section */
@@ -460,7 +491,7 @@ header h1 {
 .tnc-section summary::after {
   content: " \25BC";
   font-size: 0.8rem;
-  color: var(--text-light);
+  color: var(--text-secondary);
 }
 
 .tnc-section details[open] summary::after {
@@ -469,7 +500,7 @@ header h1 {
 
 .inline-heading {
   display: inline;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   color: var(--primary);
   border: none;
   padding: 0;
@@ -491,23 +522,24 @@ header h1 {
 }
 
 .tnc-block h4 {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: var(--primary);
   margin-bottom: 8px;
 }
 
 .tnc-block ul {
   padding-left: 20px;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
 }
 
 .tnc-block li {
   padding: 3px 0;
+  color: var(--text);
 }
 
 .tnc-footer {
-  font-size: 0.78rem;
-  color: var(--text-light);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
   font-style: italic;
   margin-top: 12px;
   padding-top: 12px;
@@ -521,7 +553,7 @@ header h1 {
   }
 
   header h1 {
-    font-size: 1.25rem;
+    font-size: 1.3rem;
   }
 
   .field-row {
@@ -531,5 +563,9 @@ header h1 {
 
   .card {
     padding: 16px;
+  }
+
+  body {
+    font-size: 15px;
   }
 }

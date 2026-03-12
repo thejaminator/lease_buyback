@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HDB Lease Buyback Scheme Calculator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>HDB Lease Buyback Scheme Calculator</h1>
+      <p class="subtitle">Estimate how much you could receive under the Lease Buyback Scheme (LBS)</p>
+      <p class="disclaimer">Based on rates effective from 1 Jan 2026. Estimates are for reference only.</p>
+    </header>
+
+    <form id="lbs-form" autocomplete="off">
+      <!-- Step 1: Flat Details -->
+      <section class="card">
+        <h2>Flat Details</h2>
+
+        <div class="field">
+          <label for="flat-type">Flat Type</label>
+          <select id="flat-type" required>
+            <option value="">Select flat type</option>
+            <option value="3room">3-room or smaller</option>
+            <option value="4room">4-room</option>
+            <option value="5room">5-room or bigger</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="market-value">Estimated Market Value ($)</label>
+          <input type="number" id="market-value" placeholder="e.g. 450000" min="0" step="1000" required>
+        </div>
+
+        <div class="field">
+          <label for="remaining-lease">Remaining Lease (years)</label>
+          <input type="number" id="remaining-lease" placeholder="e.g. 65" min="20" max="99" required>
+        </div>
+
+        <div class="field">
+          <label for="outstanding-loan">Outstanding Loan ($)</label>
+          <input type="number" id="outstanding-loan" placeholder="0" min="0" step="100" value="0">
+        </div>
+      </section>
+
+      <!-- Step 2: Owner Details -->
+      <section class="card">
+        <h2>Owner Details</h2>
+
+        <div class="field">
+          <label for="num-owners">Number of Owners</label>
+          <select id="num-owners" required>
+            <option value="1">1 owner</option>
+            <option value="2">2 owners</option>
+          </select>
+        </div>
+
+        <div id="owner-fields">
+          <!-- Owner 1 -->
+          <div class="owner-section" id="owner-1-section">
+            <h3>Owner 1</h3>
+            <div class="field-row">
+              <div class="field">
+                <label for="owner-1-age">Age</label>
+                <input type="number" id="owner-1-age" placeholder="e.g. 65" min="65" max="100" required>
+              </div>
+              <div class="field">
+                <label for="owner-1-ra">Current RA Balance ($)</label>
+                <input type="number" id="owner-1-ra" placeholder="e.g. 20000" min="0" step="100" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- Owner 2 (hidden by default) -->
+          <div class="owner-section hidden" id="owner-2-section">
+            <h3>Owner 2</h3>
+            <div class="field-row">
+              <div class="field">
+                <label for="owner-2-age">Age</label>
+                <input type="number" id="owner-2-age" placeholder="e.g. 65" min="65" max="100">
+              </div>
+              <div class="field">
+                <label for="owner-2-ra">Current RA Balance ($)</label>
+                <input type="number" id="owner-2-ra" placeholder="e.g. 20000" min="0" step="100">
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Step 3: Lease Retention -->
+      <section class="card">
+        <h2>Lease to Retain</h2>
+        <p class="help-text">Choose how many years of lease to keep. Options depend on the youngest owner's age.</p>
+
+        <div class="field">
+          <label for="lease-retain">Years of Lease to Retain</label>
+          <select id="lease-retain" required>
+            <option value="">Enter owner age(s) first</option>
+          </select>
+        </div>
+      </section>
+
+      <button type="submit" class="btn-calculate">Calculate</button>
+    </form>
+
+    <!-- Results -->
+    <section class="card results hidden" id="results">
+      <h2>Your Estimated LBS Breakdown</h2>
+
+      <div class="result-group">
+        <h3>Sale Proceeds</h3>
+        <div class="result-row">
+          <span>Tail-end lease sold</span>
+          <span id="res-tail-years" class="result-value"></span>
+        </div>
+        <div class="result-row">
+          <span>Estimated sale proceeds</span>
+          <span id="res-proceeds" class="result-value highlight"></span>
+        </div>
+        <div class="result-row" id="res-loan-row">
+          <span>Less: Outstanding loan</span>
+          <span id="res-loan" class="result-value"></span>
+        </div>
+        <div class="result-row">
+          <span>Net proceeds</span>
+          <span id="res-net-proceeds" class="result-value highlight"></span>
+        </div>
+      </div>
+
+      <div class="result-group">
+        <h3>LBS Bonus</h3>
+        <div class="result-row">
+          <span>LBS bonus</span>
+          <span id="res-bonus" class="result-value highlight"></span>
+        </div>
+        <div class="result-row">
+          <span id="res-bonus-note" class="result-note"></span>
+        </div>
+      </div>
+
+      <div class="result-group">
+        <h3>CPF Retirement Account Top-up</h3>
+        <div id="res-topup-details"></div>
+        <div class="result-row total-row">
+          <span>Total CPF RA top-up</span>
+          <span id="res-total-topup" class="result-value"></span>
+        </div>
+      </div>
+
+      <div class="result-group">
+        <h3>Cash You Receive</h3>
+        <div class="result-row">
+          <span>Cash retained</span>
+          <span id="res-cash" class="result-value highlight big"></span>
+        </div>
+        <div class="result-row" id="res-monthly-row">
+          <span>Est. CPF LIFE monthly payout</span>
+          <span id="res-monthly" class="result-value highlight big"></span>
+        </div>
+        <div class="result-row">
+          <span id="res-cpf-life-note" class="result-note"></span>
+        </div>
+      </div>
+
+      <div class="result-group summary-box">
+        <h3>Summary</h3>
+        <div class="result-row">
+          <span>Total cash received</span>
+          <span id="res-summary-cash" class="result-value highlight big"></span>
+        </div>
+        <div class="result-row">
+          <span>Total to CPF RA</span>
+          <span id="res-summary-cpf" class="result-value"></span>
+        </div>
+        <div class="result-row" id="res-summary-monthly-row">
+          <span>Est. monthly CPF LIFE payout</span>
+          <span id="res-summary-monthly" class="result-value"></span>
+        </div>
+      </div>
+
+      <p class="disclaimer">This calculator provides estimates only. Actual amounts depend on HDB's valuation and CPF Board's assessment. Please consult HDB for the official computation.</p>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

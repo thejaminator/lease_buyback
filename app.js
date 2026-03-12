@@ -684,3 +684,72 @@ form.addEventListener("submit", (e) => {
     summaryMonthlyRow.classList.add("hidden");
   }
 });
+
+// ============================================================
+// localStorage: save & restore form values across refreshes
+// ============================================================
+const STORAGE_KEY = "lbs-calculator-form";
+const FORM_FIELD_IDS = [
+  "flat-type", "market-value", "remaining-lease", "override-proceeds",
+  "outstanding-loan", "upgrading-cost", "admin-fees",
+  "num-owners", "manner-holding", "owner-1-share",
+  "owner-1-age", "owner-1-citizenship", "owner-1-ra",
+  "owner-2-age", "owner-2-citizenship", "owner-2-ra",
+  "lease-retain"
+];
+
+function saveForm() {
+  const data = {};
+  FORM_FIELD_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) data[id] = el.value;
+  });
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+}
+
+function restoreForm() {
+  let data;
+  try { data = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch (e) {}
+  if (!data) return;
+
+  // Restore num-owners first so owner 2 fields get shown
+  if (data["num-owners"]) {
+    numOwnersSelect.value = data["num-owners"];
+    numOwnersSelect.dispatchEvent(new Event("change"));
+  }
+
+  // Restore manner of holding
+  if (data["manner-holding"]) {
+    mannerHoldingSelect.value = data["manner-holding"];
+    mannerHoldingSelect.dispatchEvent(new Event("change"));
+  }
+
+  // Restore all other fields
+  FORM_FIELD_IDS.forEach(id => {
+    if (id === "num-owners" || id === "manner-holding" || id === "lease-retain") return;
+    const el = document.getElementById(id);
+    if (el && data[id] !== undefined && data[id] !== "") {
+      el.value = data[id];
+    }
+  });
+
+  // Trigger lease options update (depends on ages + remaining lease)
+  updateLeaseOptions();
+
+  // Restore lease-retain after options are populated
+  if (data["lease-retain"]) {
+    const retainEl = document.getElementById("lease-retain");
+    // Check if the saved value exists as an option
+    const opts = Array.from(retainEl.options).map(o => o.value);
+    if (opts.includes(data["lease-retain"])) {
+      retainEl.value = data["lease-retain"];
+    }
+  }
+}
+
+// Save on every input/change
+form.addEventListener("input", saveForm);
+form.addEventListener("change", saveForm);
+
+// Restore on page load
+restoreForm();

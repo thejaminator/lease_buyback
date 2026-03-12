@@ -153,12 +153,12 @@ function estimateRSSPayout(raBalance, age) {
   return raBalance / yearsRemaining / 12;
 }
 
-// --- Draw Bala's Curve Chart ---
+// --- Draw Lease Timeline + Bala's Curve Chart ---
 function drawBalasChart(remainingLease, retainedLease, marketValue, grossProceeds) {
   const canvas = document.getElementById("balas-chart");
   const dpr = window.devicePixelRatio || 1;
   const displayW = canvas.parentElement.clientWidth;
-  const displayH = Math.min(320, displayW * 0.55);
+  const displayH = Math.min(420, displayW * 0.72);
   canvas.width = displayW * dpr;
   canvas.height = displayH * dpr;
   canvas.style.width = displayW + "px";
@@ -166,19 +166,94 @@ function drawBalasChart(remainingLease, retainedLease, marketValue, grossProceed
   const ctx = canvas.getContext("2d");
   ctx.scale(dpr, dpr);
 
-  // Layout
-  const pad = { top: 30, right: 20, bottom: 50, left: 55 };
+  const tailYears = remainingLease - retainedLease;
+  const retainedFactor = getLeaseValue(retainedLease);
+  const remainingFactor = getLeaseValue(remainingLease);
+
+  // ==============================
+  // PART 1: Timeline Bar (top)
+  // Shows the lease as a timeline from NOW into the future
+  // ==============================
+  const barTop = 14;
+  const barH = 38;
+  const barLeft = 20;
+  const barRight = displayW - 20;
+  const barW = barRight - barLeft;
+
+  // Proportions
+  const retainPct = retainedLease / remainingLease;
+  const retainW = barW * retainPct;
+  const soldW = barW * (1 - retainPct);
+
+  // "You keep" portion (blue)
+  ctx.fillStyle = "#2980b9";
+  ctx.beginPath();
+  ctx.roundRect(barLeft, barTop, retainW, barH, [6, 0, 0, 6]);
+  ctx.fill();
+
+  // "Sold to HDB" tail-end (red)
+  ctx.fillStyle = "#c0392b";
+  ctx.beginPath();
+  ctx.roundRect(barLeft + retainW, barTop, soldW, barH, [0, 6, 6, 0]);
+  ctx.fill();
+
+  // Labels on the bar
+  ctx.fillStyle = "#fff";
+  ctx.textAlign = "center";
+  ctx.font = "bold 12px -apple-system, sans-serif";
+
+  if (retainW > 80) {
+    ctx.fillText(`You keep: ${retainedLease} yr`, barLeft + retainW / 2, barTop + barH / 2 - 5);
+    ctx.font = "11px -apple-system, sans-serif";
+    ctx.fillText("(near-term)", barLeft + retainW / 2, barTop + barH / 2 + 10);
+  } else if (retainW > 40) {
+    ctx.font = "bold 11px -apple-system, sans-serif";
+    ctx.fillText(`Keep ${retainedLease}yr`, barLeft + retainW / 2, barTop + barH / 2 + 4);
+  }
+
+  ctx.font = "bold 12px -apple-system, sans-serif";
+  if (soldW > 100) {
+    ctx.fillText(`Sold to HDB: ${tailYears} yr tail-end`, barLeft + retainW + soldW / 2, barTop + barH / 2 - 5);
+    ctx.font = "11px -apple-system, sans-serif";
+    ctx.fillText(fmt(grossProceeds), barLeft + retainW + soldW / 2, barTop + barH / 2 + 10);
+  } else if (soldW > 50) {
+    ctx.font = "bold 11px -apple-system, sans-serif";
+    ctx.fillText(`Sell ${tailYears}yr`, barLeft + retainW + soldW / 2, barTop + barH / 2 - 3);
+    ctx.font = "10px -apple-system, sans-serif";
+    ctx.fillText(fmt(grossProceeds), barLeft + retainW + soldW / 2, barTop + barH / 2 + 10);
+  }
+
+  // Timeline labels below bar
+  ctx.fillStyle = "#1a1a1a";
+  ctx.font = "bold 11px -apple-system, sans-serif";
+  ctx.textAlign = "left";
+  ctx.fillText("Now", barLeft, barTop + barH + 14);
+  ctx.textAlign = "center";
+  ctx.fillText(`Year ${retainedLease}`, barLeft + retainW, barTop + barH + 14);
+  ctx.textAlign = "right";
+  ctx.fillText(`Year ${remainingLease}`, barRight, barTop + barH + 14);
+
+  // Divider line
+  ctx.strokeStyle = "#fff";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(barLeft + retainW, barTop);
+  ctx.lineTo(barLeft + retainW, barTop + barH);
+  ctx.stroke();
+
+  // ==============================
+  // PART 2: Bala's Curve (below)
+  // Shows why the tail-end is worth less
+  // ==============================
+  const curveTop = barTop + barH + 30;
+  const pad = { top: curveTop, right: 20, bottom: 50, left: 55 };
   const w = displayW - pad.left - pad.right;
   const h = displayH - pad.top - pad.bottom;
 
-  // Helpers to convert data -> pixel
   const xScale = (years) => pad.left + (years / 99) * w;
   const yScale = (pct) => pad.top + h - (pct / 100) * h;
 
-  // Clear
-  ctx.clearRect(0, 0, displayW, displayH);
-
-  // --- Grid lines ---
+  // Grid lines
   ctx.strokeStyle = "#e8ecf0";
   ctx.lineWidth = 1;
   for (let pct = 0; pct <= 100; pct += 20) {
@@ -194,36 +269,7 @@ function drawBalasChart(remainingLease, retainedLease, marketValue, grossProceed
     ctx.stroke();
   }
 
-  // --- Shaded area: tail-end lease sold (between retained and remaining) ---
-  const retainedFactor = getLeaseValue(retainedLease);
-  const remainingFactor = getLeaseValue(remainingLease);
-
-  // Fill the area under the curve between retained and remaining lease
-  ctx.beginPath();
-  ctx.moveTo(xScale(retainedLease), yScale(retainedFactor));
-  for (let yr = retainedLease; yr <= remainingLease; yr += 0.5) {
-    ctx.lineTo(xScale(yr), yScale(getLeaseValue(yr)));
-  }
-  ctx.lineTo(xScale(remainingLease), yScale(remainingFactor));
-  // Close down to x-axis level of remaining, across to retained, back up
-  ctx.lineTo(xScale(remainingLease), yScale(retainedFactor));
-  ctx.closePath();
-  ctx.fillStyle = "rgba(231, 76, 60, 0.15)";
-  ctx.fill();
-
-  // Fill the retained portion (under curve from 0 to retained)
-  ctx.beginPath();
-  ctx.moveTo(xScale(0), yScale(0));
-  for (let yr = 0; yr <= retainedLease; yr += 0.5) {
-    ctx.lineTo(xScale(yr), yScale(getLeaseValue(yr)));
-  }
-  ctx.lineTo(xScale(retainedLease), yScale(retainedFactor));
-  ctx.lineTo(xScale(retainedLease), yScale(0));
-  ctx.closePath();
-  ctx.fillStyle = "rgba(41, 128, 185, 0.08)";
-  ctx.fill();
-
-  // --- Draw the full curve ---
+  // Draw the full curve
   ctx.beginPath();
   ctx.moveTo(xScale(0), yScale(0));
   for (let yr = 0; yr <= 99; yr += 0.5) {
@@ -233,19 +279,17 @@ function drawBalasChart(remainingLease, retainedLease, marketValue, grossProceed
   ctx.lineWidth = 2.5;
   ctx.stroke();
 
-  // --- Vertical dashed lines at retained and remaining ---
+  // Vertical dashed lines at retained and remaining
   ctx.setLineDash([5, 4]);
   ctx.lineWidth = 1.5;
 
-  // Retained lease line
   ctx.strokeStyle = "#2980b9";
   ctx.beginPath();
   ctx.moveTo(xScale(retainedLease), yScale(0));
   ctx.lineTo(xScale(retainedLease), yScale(retainedFactor));
   ctx.stroke();
 
-  // Remaining lease line
-  ctx.strokeStyle = "#e74c3c";
+  ctx.strokeStyle = "#c0392b";
   ctx.beginPath();
   ctx.moveTo(xScale(remainingLease), yScale(0));
   ctx.lineTo(xScale(remainingLease), yScale(remainingFactor));
@@ -265,7 +309,7 @@ function drawBalasChart(remainingLease, retainedLease, marketValue, grossProceed
 
   ctx.setLineDash([]);
 
-  // --- Dots on curve ---
+  // Dots on curve
   function drawDot(x, y, color) {
     ctx.beginPath();
     ctx.arc(x, y, 5, 0, Math.PI * 2);
@@ -276,33 +320,28 @@ function drawBalasChart(remainingLease, retainedLease, marketValue, grossProceed
     ctx.stroke();
   }
   drawDot(xScale(retainedLease), yScale(retainedFactor), "#2980b9");
-  drawDot(xScale(remainingLease), yScale(remainingFactor), "#e74c3c");
+  drawDot(xScale(remainingLease), yScale(remainingFactor), "#c0392b");
 
-  // --- Labels ---
+  // Curve point labels
   ctx.textAlign = "center";
   ctx.font = "bold 11px -apple-system, sans-serif";
 
-  // Retained label
   ctx.fillStyle = "#2980b9";
-  const retLabel = `Retain: ${retainedLease}yr (${Math.round(retainedFactor)}%)`;
-  ctx.fillText(retLabel, xScale(retainedLease), yScale(retainedFactor) - 12);
+  ctx.fillText(`${retainedLease}yr = ${retainedFactor.toFixed(1)}%`, xScale(retainedLease), yScale(retainedFactor) - 10);
 
-  // Remaining label
-  ctx.fillStyle = "#e74c3c";
-  const remLabel = `Current: ${remainingLease}yr (${Math.round(remainingFactor)}%)`;
-  const remLabelX = Math.min(xScale(remainingLease), displayW - pad.right - 60);
-  ctx.fillText(remLabel, remLabelX, yScale(remainingFactor) - 12);
+  ctx.fillStyle = "#c0392b";
+  const remLabelX = Math.min(xScale(remainingLease), displayW - pad.right - 50);
+  ctx.fillText(`${remainingLease}yr = ${remainingFactor.toFixed(1)}%`, remLabelX, yScale(remainingFactor) - 10);
 
-  // Sold portion label (in the shaded area)
-  const midYr = (retainedLease + remainingLease) / 2;
-  const midFactor = (retainedFactor + remainingFactor) / 2;
-  ctx.fillStyle = "rgba(231, 76, 60, 0.8)";
-  ctx.font = "bold 12px -apple-system, sans-serif";
-  ctx.fillText("Sold to HDB", xScale(midYr), yScale(midFactor) + 2);
+  // Annotation: difference = value of tail-end
+  const midY = (yScale(retainedFactor) + yScale(remainingFactor)) / 2;
+  ctx.fillStyle = "#c0392b";
   ctx.font = "11px -apple-system, sans-serif";
-  ctx.fillText(fmt(grossProceeds), xScale(midYr), yScale(midFactor) + 16);
+  const diffPct = (remainingFactor - retainedFactor).toFixed(1);
+  ctx.fillText(`Difference: ${diffPct}%`, (xScale(retainedLease) + xScale(remainingLease)) / 2, midY);
+  ctx.fillText(`= value of tail-end`, (xScale(retainedLease) + xScale(remainingLease)) / 2, midY + 14);
 
-  // --- Axes ---
+  // Axes
   ctx.strokeStyle = "#aaa";
   ctx.lineWidth = 1;
   ctx.beginPath();
@@ -312,12 +351,11 @@ function drawBalasChart(remainingLease, retainedLease, marketValue, grossProceed
   ctx.stroke();
 
   // X-axis labels
-  ctx.fillStyle = "#7f8c8d";
+  ctx.fillStyle = "#1a1a1a";
   ctx.font = "11px -apple-system, sans-serif";
   ctx.textAlign = "center";
   for (let yr = 0; yr <= 99; yr += 10) {
-    const label = yr === 0 ? "0" : yr.toString();
-    ctx.fillText(label, xScale(yr), pad.top + h + 16);
+    ctx.fillText(yr.toString(), xScale(yr), pad.top + h + 16);
   }
   ctx.font = "bold 11px -apple-system, sans-serif";
   ctx.fillText("Remaining Lease (years)", pad.left + w / 2, displayH - 6);
@@ -325,7 +363,6 @@ function drawBalasChart(remainingLease, retainedLease, marketValue, grossProceed
   // Y-axis labels
   ctx.textAlign = "right";
   ctx.font = "11px -apple-system, sans-serif";
-  ctx.fillStyle = "#7f8c8d";
   for (let pct = 0; pct <= 100; pct += 20) {
     ctx.fillText(pct + "%", pad.left - 8, yScale(pct) + 4);
   }
@@ -337,11 +374,11 @@ function drawBalasChart(remainingLease, retainedLease, marketValue, grossProceed
   ctx.fillText("% of Freehold Value", 0, 0);
   ctx.restore();
 
-  // Title
-  ctx.fillStyle = "#1a5276";
-  ctx.font = "bold 13px -apple-system, sans-serif";
+  // Curve subtitle
+  ctx.fillStyle = "#333";
+  ctx.font = "11px -apple-system, sans-serif";
   ctx.textAlign = "center";
-  ctx.fillText("Bala's Curve — Lease Depreciation", pad.left + w / 2, 16);
+  ctx.fillText("Bala's Curve — why the tail-end is worth less than the near-term", pad.left + w / 2, curveTop - 10);
 }
 
 // --- Format currency ---

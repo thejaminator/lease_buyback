@@ -92,11 +92,21 @@ function calculateBonus(flatType, totalTopUp) {
 }
 
 // --- Lease Retention Options ---
+// Minimum lease must cover youngest owner to at least age 95.
+// Options in 5-year increments from the HDB minimum up to 35 years.
 function getLeaseOptions(youngestAge) {
-  if (youngestAge >= 80) return [15, 20, 25, 30, 35];
-  if (youngestAge >= 75) return [20, 25, 30, 35];
-  if (youngestAge >= 70) return [25, 30, 35];
-  return [30, 35]; // 65-69
+  // HDB minimums by age bracket
+  let minYears;
+  if (youngestAge >= 80) minYears = 15;
+  else if (youngestAge >= 75) minYears = 20;
+  else if (youngestAge >= 70) minYears = 25;
+  else minYears = 30; // 65-69
+
+  const options = [];
+  for (let y = minYears; y <= 35; y += 5) {
+    options.push(y);
+  }
+  return options;
 }
 
 // --- CPF LIFE Monthly Payout Estimate ---
@@ -381,19 +391,30 @@ function updateLeaseOptions() {
 
   const youngestAge = Math.min(age1, age2);
   leaseRetainSelect.innerHTML = "";
+  const hint = document.getElementById("lease-retain-hint");
 
   if (youngestAge < 65) {
     leaseRetainSelect.innerHTML = '<option value="">Enter owner age(s) first</option>';
+    hint.textContent = "";
     return;
   }
 
   const options = getLeaseOptions(youngestAge);
-  options.forEach(years => {
+  const minYears = options[0];
+  const coveredUntilMin = youngestAge + minYears;
+
+  options.forEach((years, i) => {
+    const coveredUntil = youngestAge + years;
     const opt = document.createElement("option");
     opt.value = years;
-    opt.textContent = `${years} years`;
+    const label = i === 0
+      ? `${years} years (minimum — covers until age ${coveredUntil})`
+      : `${years} years (covers until age ${coveredUntil})`;
+    opt.textContent = label;
     leaseRetainSelect.appendChild(opt);
   });
+
+  hint.textContent = `Youngest owner is ${youngestAge}. Minimum ${minYears} years retained to cover until age ${coveredUntilMin}. Retaining more years = less sale proceeds but longer coverage.`;
 }
 
 // --- Helper to create result rows ---

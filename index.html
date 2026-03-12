@@ -17,7 +17,7 @@
     <form id="lbs-form" autocomplete="off">
       <!-- Step 1: Flat Details -->
       <section class="card">
-        <h2>Flat Details</h2>
+        <h2>1. Flat Details</h2>
 
         <div class="field">
           <label for="flat-type">Flat Type</label>
@@ -38,16 +38,34 @@
           <label for="remaining-lease">Remaining Lease (years)</label>
           <input type="number" id="remaining-lease" placeholder="e.g. 65" min="20" max="99" required>
         </div>
+      </section>
+
+      <!-- Step 2: Deductions -->
+      <section class="card">
+        <h2>2. Outstanding Payments</h2>
+        <p class="help-text">HDB will deduct these from sale proceeds before distributing net proceeds. (T&C 1.4)</p>
 
         <div class="field">
-          <label for="outstanding-loan">Outstanding Loan ($)</label>
+          <label for="outstanding-loan">Outstanding Mortgage Loan ($)</label>
           <input type="number" id="outstanding-loan" placeholder="0" min="0" step="100" value="0">
+        </div>
+
+        <div class="field">
+          <label for="upgrading-cost">Upgrading Cost / Estimated Upgrading Cost ($)</label>
+          <input type="number" id="upgrading-cost" placeholder="0" min="0" step="100" value="0">
+          <span class="field-hint">If your flat is affected by an upgrading programme (T&C 4.3)</span>
+        </div>
+
+        <div class="field">
+          <label for="admin-fees">Admin / Legal Fees ($)</label>
+          <input type="number" id="admin-fees" placeholder="0" min="0" step="100" value="0">
+          <span class="field-hint">Conveyancing, stamp duty, registration fees, etc. (T&C 3.1)</span>
         </div>
       </section>
 
-      <!-- Step 2: Owner Details -->
+      <!-- Step 3: Owner Details -->
       <section class="card">
-        <h2>Owner Details</h2>
+        <h2>3. Owner Details</h2>
 
         <div class="field">
           <label for="num-owners">Number of Owners</label>
@@ -55,6 +73,23 @@
             <option value="1">1 owner</option>
             <option value="2">2 owners</option>
           </select>
+        </div>
+
+        <!-- Manner of holding (shown for 2 owners) -->
+        <div class="field hidden" id="holding-field">
+          <label for="manner-holding">Manner of Holding</label>
+          <select id="manner-holding">
+            <option value="joint">Joint Tenancy (equal 50/50 share)</option>
+            <option value="tic">Tenancy-in-Common (custom shares)</option>
+          </select>
+          <span class="field-hint">Proceeds are split based on manner of holding (T&C 2.1, 7.1)</span>
+        </div>
+
+        <!-- Custom shares for TIC -->
+        <div class="field hidden" id="tic-share-field">
+          <label for="owner-1-share">Owner 1's Share (%)</label>
+          <input type="number" id="owner-1-share" placeholder="e.g. 60" min="1" max="99" value="50">
+          <span class="field-hint">Owner 2 gets the remaining percentage</span>
         </div>
 
         <div id="owner-fields">
@@ -67,9 +102,16 @@
                 <input type="number" id="owner-1-age" placeholder="e.g. 65" min="65" max="100" required>
               </div>
               <div class="field">
-                <label for="owner-1-ra">Current RA Balance ($)</label>
-                <input type="number" id="owner-1-ra" placeholder="e.g. 20000" min="0" step="100" required>
+                <label for="owner-1-citizenship">Citizenship</label>
+                <select id="owner-1-citizenship">
+                  <option value="sc">Singapore Citizen</option>
+                  <option value="pr">Permanent Resident</option>
+                </select>
               </div>
+            </div>
+            <div class="field">
+              <label for="owner-1-ra">Current RA Balance ($)</label>
+              <input type="number" id="owner-1-ra" placeholder="e.g. 20000" min="0" step="100" required>
             </div>
           </div>
 
@@ -82,17 +124,24 @@
                 <input type="number" id="owner-2-age" placeholder="e.g. 65" min="65" max="100">
               </div>
               <div class="field">
-                <label for="owner-2-ra">Current RA Balance ($)</label>
-                <input type="number" id="owner-2-ra" placeholder="e.g. 20000" min="0" step="100">
+                <label for="owner-2-citizenship">Citizenship</label>
+                <select id="owner-2-citizenship">
+                  <option value="sc">Singapore Citizen</option>
+                  <option value="pr">Permanent Resident</option>
+                </select>
               </div>
+            </div>
+            <div class="field">
+              <label for="owner-2-ra">Current RA Balance ($)</label>
+              <input type="number" id="owner-2-ra" placeholder="e.g. 20000" min="0" step="100">
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Step 3: Lease Retention -->
+      <!-- Step 4: Lease Retention -->
       <section class="card">
-        <h2>Lease to Retain</h2>
+        <h2>4. Lease to Retain</h2>
         <p class="help-text">Choose how many years of lease to keep. Options depend on the youngest owner's age.</p>
 
         <div class="field">
@@ -110,28 +159,54 @@
     <section class="card results hidden" id="results">
       <h2>Your Estimated LBS Breakdown</h2>
 
+      <!-- Sale Proceeds -->
       <div class="result-group">
-        <h3>Sale Proceeds</h3>
+        <h3>Sale of Tail-End Lease</h3>
         <div class="result-row">
-          <span>Tail-end lease sold</span>
+          <span>Tail-end lease sold to HDB</span>
           <span id="res-tail-years" class="result-value"></span>
         </div>
         <div class="result-row">
-          <span>Estimated sale proceeds</span>
+          <span>Gross sale proceeds (est.)</span>
           <span id="res-proceeds" class="result-value highlight"></span>
         </div>
-        <div class="result-row" id="res-loan-row">
-          <span>Less: Outstanding loan</span>
-          <span id="res-loan" class="result-value"></span>
+        <div class="result-row hidden" id="res-loan-row">
+          <span>Less: Outstanding mortgage loan</span>
+          <span id="res-loan" class="result-value deduction"></span>
         </div>
-        <div class="result-row">
+        <div class="result-row hidden" id="res-upgrading-row">
+          <span>Less: Upgrading cost</span>
+          <span id="res-upgrading" class="result-value deduction"></span>
+        </div>
+        <div class="result-row hidden" id="res-fees-row">
+          <span>Less: Admin / legal fees</span>
+          <span id="res-fees" class="result-value deduction"></span>
+        </div>
+        <div class="result-row total-row">
           <span>Net proceeds</span>
           <span id="res-net-proceeds" class="result-value highlight"></span>
         </div>
       </div>
 
+      <!-- Per-Owner Apportionment (for 2 owners) -->
+      <div class="result-group hidden" id="res-apportion-group">
+        <h3>Proceeds Apportionment (T&C 2.1)</h3>
+        <div id="res-apportion-details"></div>
+      </div>
+
+      <!-- CPF RA Top-up -->
       <div class="result-group">
-        <h3>LBS Bonus</h3>
+        <h3>CPF Retirement Account Top-up (T&C 2.2)</h3>
+        <div id="res-topup-details"></div>
+        <div class="result-row total-row">
+          <span>Total CPF RA top-up</span>
+          <span id="res-total-topup" class="result-value"></span>
+        </div>
+      </div>
+
+      <!-- LBS Bonus -->
+      <div class="result-group">
+        <h3>LBS Bonus (T&C 2.5)</h3>
         <div class="result-row">
           <span>LBS bonus</span>
           <span id="res-bonus" class="result-value highlight"></span>
@@ -141,34 +216,26 @@
         </div>
       </div>
 
+      <!-- Cash & CPF LIFE -->
       <div class="result-group">
-        <h3>CPF Retirement Account Top-up</h3>
-        <div id="res-topup-details"></div>
-        <div class="result-row total-row">
-          <span>Total CPF RA top-up</span>
-          <span id="res-total-topup" class="result-value"></span>
-        </div>
-      </div>
-
-      <div class="result-group">
-        <h3>Cash You Receive</h3>
+        <h3>Cash Disbursement (T&C 2.3)</h3>
         <div class="result-row">
-          <span>Cash retained</span>
+          <span>Cash retained (max $100k/household)</span>
           <span id="res-cash" class="result-value highlight big"></span>
         </div>
-        <div class="result-row" id="res-monthly-row">
-          <span>Est. CPF LIFE monthly payout</span>
-          <span id="res-monthly" class="result-value highlight big"></span>
-        </div>
-        <div class="result-row">
-          <span id="res-cpf-life-note" class="result-note"></span>
-        </div>
+        <div id="res-cash-note" class="result-note"></div>
       </div>
 
+      <div class="result-group">
+        <h3>CPF LIFE / Retirement Sum Scheme (T&C 2.4)</h3>
+        <div id="res-cpf-life-details"></div>
+      </div>
+
+      <!-- Summary -->
       <div class="result-group summary-box">
         <h3>Summary</h3>
         <div class="result-row">
-          <span>Total cash received</span>
+          <span>Cash you receive</span>
           <span id="res-summary-cash" class="result-value highlight big"></span>
         </div>
         <div class="result-row">
@@ -176,12 +243,136 @@
           <span id="res-summary-cpf" class="result-value"></span>
         </div>
         <div class="result-row" id="res-summary-monthly-row">
-          <span>Est. monthly CPF LIFE payout</span>
+          <span>Est. CPF LIFE monthly payout</span>
           <span id="res-summary-monthly" class="result-value"></span>
         </div>
       </div>
 
-      <p class="disclaimer">This calculator provides estimates only. Actual amounts depend on HDB's valuation and CPF Board's assessment. Please consult HDB for the official computation.</p>
+      <!-- Important Restrictions -->
+      <div class="result-group restrictions">
+        <h3>Important Restrictions After LBS</h3>
+        <ul class="restriction-list">
+          <li><strong>Cannot sell flat</strong> on the open market after LBS completion (T&C 13.1)</li>
+          <li><strong>Cannot rent out whole flat</strong> &mdash; only spare bedrooms (except 1 &amp; 2-room), subject to HDB rules (T&C 14.1)</li>
+          <li><strong>5-year wait</strong> before applying for another subsidised HDB flat (T&C 17.1)</li>
+          <li><strong>2.5-year wait</strong> from surrender/transfer of LBS flat before applying for HDB rental flat (T&C 17.2)</li>
+          <li><strong>Private property</strong>: must complete 5-year MOP (10-year for Plus/Prime) and continue to stay in HDB flat (T&C 19.1)</li>
+          <li><strong>Irrevocable</strong>: once legal documents are signed, the lease cannot be reverted (T&C 12.2)</li>
+          <li><strong>Early termination</strong>: HDB may allow premature surrender; residual value based on straight-line depreciation (T&C 16.1-16.2)</li>
+          <li><strong>CPF LIFE continues</strong> even if flat is returned to HDB prematurely (T&C 16.3)</li>
+        </ul>
+      </div>
+
+      <p class="disclaimer">This calculator provides estimates only. Actual amounts depend on HDB's valuation and CPF Board's assessment. Flat owners bear their own legal costs (T&C 3.1). Please consult HDB for the official computation.</p>
+    </section>
+
+    <!-- T&C Reference -->
+    <section class="card tnc-section">
+      <details>
+        <summary><h2 class="inline-heading">Terms & Conditions Reference</h2></summary>
+
+        <div class="tnc-content">
+          <div class="tnc-block">
+            <h4>1. Approval Requirements</h4>
+            <ul>
+              <li>All flat owners and spouses must satisfy all prevailing T&C</li>
+              <li>If flat announced for redevelopment, eligibility assessed as at announcement date</li>
+              <li>Persons on debarment list are not eligible</li>
+              <li>Spouse's consent required even if not listed as owner</li>
+              <li>All owners, spouses, and witnesses must attend appointments</li>
+              <li>All debts, arrears, taxes, and fees must be settled before approval</li>
+            </ul>
+          </div>
+
+          <div class="tnc-block">
+            <h4>2. Net Proceeds &amp; CPF Top-up</h4>
+            <ul>
+              <li><strong>Apportionment:</strong> Net proceeds split based on manner of holding (50/50 for joint tenancy, respective shares for tenancy-in-common)</li>
+              <li><strong>Step 1:</strong> Each owner tops up own RA to specified requirement (FRS for sole owner, BRS for 2+ owners)</li>
+              <li><strong>Step 2:</strong> If insufficient, top up with entire share of proceeds</li>
+              <li><strong>Step 3:</strong> If combined remaining proceeds exceed $100,000, the excess is used for further RA top-up to current FRS</li>
+              <li><strong>Step 4:</strong> Remaining proceeds disbursed as cash (single cheque for joint tenancy, separate cheques for tenancy-in-common)</li>
+              <li><strong>MA top-up option:</strong> If all owners met FRS and total top-ups are below $60,000, owners can opt to top up MAs and/or spouses' RAs/MAs to reach $60,000 total for full bonus</li>
+              <li><strong>CPF LIFE:</strong> Owners below 80 with RA &ge; $60,000 after top-up must join CPF LIFE. Entire RA used as premium.</li>
+              <li><strong>Retirement Sum Scheme:</strong> Owners aged 80+ receive monthly payouts from RA until depleted</li>
+            </ul>
+          </div>
+
+          <div class="tnc-block">
+            <h4>2.5 LBS Bonus</h4>
+            <ul>
+              <li>Full bonus if total RA/MA top-ups &ge; $60,000: up to $30,000 (3-room), $15,000 (4-room), $7,500 (5-room)</li>
+              <li>Pro-rated if less: $1 per $2 (3-room), $1 per $4 (4-room), $1 per $8 (5-room)</li>
+              <li>Shared among eligible SC owners &amp; SC spouses based on individual top-up amounts</li>
+              <li>One-time only per household</li>
+              <li>No recovery if flat returned prematurely</li>
+              <li>No bonus if all owners already at FRS before joining LBS</li>
+            </ul>
+          </div>
+
+          <div class="tnc-block">
+            <h4>3-6. Payments, Upgrading &amp; Levies</h4>
+            <ul>
+              <li>Flat owners bear own legal costs and expenses</li>
+              <li>CPF monies may be used for legal costs (subject to CPF rules)</li>
+              <li>If upgrading programme affects flat, prevailing policies apply</li>
+              <li>LBS completed before polling day: no upgrading cost needed</li>
+              <li>LBS completed on/after polling day: upgrading cost withheld from proceeds</li>
+              <li>10% upgrading levy on tail-end lease value if owner enjoyed 2+ upgrading subsidies</li>
+              <li>Resale levy applies if buying another subsidised flat</li>
+            </ul>
+          </div>
+
+          <div class="tnc-block">
+            <h4>7-10. Ownership &amp; Flat Conditions</h4>
+            <ul>
+              <li>Manner of holding remains same after LBS completion</li>
+              <li>No change of flat owner/occupier during application</li>
+              <li>Must allow HDB/valuers entry to assess flat</li>
+              <li>Title must be in order; replacement title deed needed if lost</li>
+            </ul>
+          </div>
+
+          <div class="tnc-block">
+            <h4>11-12. Cancellation &amp; Completion</h4>
+            <ul>
+              <li>HDB cancels on written request from owners</li>
+              <li>HDB may reject/cancel for false declaration, missing documents, non-compliance, or ineligibility</li>
+              <li>Cancellation fees (conveyancing, stamp, registration) still payable</li>
+              <li>Service/conservancy charges and property tax must be paid up to completion</li>
+              <li><strong>Transaction is irrevocable</strong> after legal documents are signed</li>
+            </ul>
+          </div>
+
+          <div class="tnc-block">
+            <h4>13-19. Post-LBS Restrictions</h4>
+            <ul>
+              <li>Cannot sell LBS flat on open market</li>
+              <li>Cannot rent out whole flat (bedrooms only, except 1 &amp; 2-room)</li>
+              <li>CPF refund required on surrender/transfer/disposal of flat</li>
+              <li>Early termination: residual value based on straight-line depreciation</li>
+              <li>CPF LIFE continues even if flat returned prematurely</li>
+              <li>5-year wait for new subsidised HDB flat</li>
+              <li>2.5-year wait for HDB rental flat (from surrender/transfer)</li>
+              <li>Private property purchase: 5-year MOP (10 for Plus/Prime), must continue living in HDB flat</li>
+            </ul>
+          </div>
+
+          <div class="tnc-block">
+            <h4>20-22. Other Conditions</h4>
+            <ul>
+              <li>Compulsory acquisition/revesting for breach of HDA provisions</li>
+              <li>Must pay all rates, taxes, charges</li>
+              <li>No transfer/assignment/mortgage without HDB consent</li>
+              <li>Must keep flat in good repair</li>
+              <li>Must obtain HDB consent before alterations</li>
+              <li>Consent given to HDB, CPFB, IRAS for use of personal information</li>
+            </ul>
+          </div>
+
+          <p class="tnc-footer">Terms valid as of Dec 2025. Subject to change. HDB's decisions are final. False declarations may result in fines up to $5,000 and/or imprisonment up to 6 months.</p>
+        </div>
+      </details>
     </section>
   </div>
 

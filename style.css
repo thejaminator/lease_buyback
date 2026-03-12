@@ -14,7 +14,7 @@
   --text-light: #7f8c8d;
   --border: #dce1e8;
   --success: #27ae60;
-  --highlight: #1a5276;
+  --warning: #d4a017;
 }
 
 body {
@@ -111,6 +111,13 @@ header h1 {
   outline: none;
   border-color: var(--primary-light);
   box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.1);
+}
+
+.field-hint {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--text-light);
+  margin-top: 3px;
 }
 
 .field-row {
@@ -212,10 +219,15 @@ header h1 {
   font-size: 1.2rem;
 }
 
+.result-value.deduction {
+  color: var(--accent);
+}
+
 .result-note {
   font-size: 0.8rem;
   color: var(--text-light);
   font-style: italic;
+  padding: 2px 0;
 }
 
 .total-row {
@@ -247,6 +259,117 @@ header h1 {
 
 .summary-box .result-value.highlight {
   color: #fff;
+}
+
+/* Restrictions */
+.restrictions {
+  background: #fef9e7;
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid #f9e79f;
+}
+
+.restrictions h3 {
+  color: var(--warning) !important;
+}
+
+.restriction-list {
+  list-style: none;
+  padding: 0;
+}
+
+.restriction-list li {
+  font-size: 0.85rem;
+  padding: 5px 0;
+  padding-left: 16px;
+  position: relative;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.restriction-list li:last-child {
+  border-bottom: none;
+}
+
+.restriction-list li::before {
+  content: "\26A0";
+  position: absolute;
+  left: 0;
+  font-size: 0.75rem;
+}
+
+/* T&C Section */
+.tnc-section {
+  background: var(--card-bg);
+}
+
+.tnc-section details {
+  cursor: pointer;
+}
+
+.tnc-section summary {
+  list-style: none;
+  padding: 4px 0;
+}
+
+.tnc-section summary::-webkit-details-marker {
+  display: none;
+}
+
+.tnc-section summary::after {
+  content: " \25BC";
+  font-size: 0.8rem;
+  color: var(--text-light);
+}
+
+.tnc-section details[open] summary::after {
+  content: " \25B2";
+}
+
+.inline-heading {
+  display: inline;
+  font-size: 1.1rem;
+  color: var(--primary);
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tnc-content {
+  margin-top: 16px;
+}
+
+.tnc-block {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tnc-block:last-of-type {
+  border-bottom: none;
+}
+
+.tnc-block h4 {
+  font-size: 0.9rem;
+  color: var(--primary);
+  margin-bottom: 8px;
+}
+
+.tnc-block ul {
+  padding-left: 20px;
+  font-size: 0.85rem;
+}
+
+.tnc-block li {
+  padding: 3px 0;
+}
+
+.tnc-footer {
+  font-size: 0.78rem;
+  color: var(--text-light);
+  font-style: italic;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
 }
 
 /* Responsive */

@@ -158,7 +158,7 @@ function drawBalasChart(remainingLease, retainedLease, marketValue, grossProceed
   const canvas = document.getElementById("balas-chart");
   const dpr = window.devicePixelRatio || 1;
   const displayW = canvas.parentElement.clientWidth;
-  const displayH = 120;
+  const displayH = 150;
   canvas.width = displayW * dpr;
   canvas.height = displayH * dpr;
   canvas.style.width = displayW + "px";
@@ -171,11 +171,11 @@ function drawBalasChart(remainingLease, retainedLease, marketValue, grossProceed
   const remainingFactor = getLeaseValue(remainingLease);
 
   // ==============================
-  // PART 1: Timeline Bar (top)
-  // Shows the lease as a timeline from NOW into the future
+  // Timeline Bar
+  // Shows the lease from NOW into the future
   // ==============================
-  const barTop = 14;
-  const barH = 38;
+  const barTop = 16;
+  const barH = 52;
   const barLeft = 20;
   const barRight = displayW - 20;
   const barW = barRight - barLeft;
@@ -200,38 +200,38 @@ function drawBalasChart(remainingLease, retainedLease, marketValue, grossProceed
   // Labels on the bar
   ctx.fillStyle = "#fff";
   ctx.textAlign = "center";
-  ctx.font = "bold 12px -apple-system, sans-serif";
+  ctx.font = "bold 16px -apple-system, sans-serif";
 
-  if (retainW > 80) {
-    ctx.fillText(`You keep: ${retainedLease} yr`, barLeft + retainW / 2, barTop + barH / 2 - 5);
-    ctx.font = "11px -apple-system, sans-serif";
-    ctx.fillText("(near-term)", barLeft + retainW / 2, barTop + barH / 2 + 10);
-  } else if (retainW > 40) {
-    ctx.font = "bold 11px -apple-system, sans-serif";
-    ctx.fillText(`Keep ${retainedLease}yr`, barLeft + retainW / 2, barTop + barH / 2 + 4);
+  if (retainW > 100) {
+    ctx.fillText(`You keep: ${retainedLease} yr`, barLeft + retainW / 2, barTop + barH / 2 - 6);
+    ctx.font = "14px -apple-system, sans-serif";
+    ctx.fillText("(near-term)", barLeft + retainW / 2, barTop + barH / 2 + 12);
+  } else if (retainW > 50) {
+    ctx.font = "bold 14px -apple-system, sans-serif";
+    ctx.fillText(`Keep ${retainedLease}yr`, barLeft + retainW / 2, barTop + barH / 2 + 5);
   }
 
-  ctx.font = "bold 12px -apple-system, sans-serif";
-  if (soldW > 100) {
-    ctx.fillText(`Sold to HDB: ${tailYears} yr tail-end`, barLeft + retainW + soldW / 2, barTop + barH / 2 - 5);
-    ctx.font = "11px -apple-system, sans-serif";
-    ctx.fillText(fmt(grossProceeds), barLeft + retainW + soldW / 2, barTop + barH / 2 + 10);
-  } else if (soldW > 50) {
-    ctx.font = "bold 11px -apple-system, sans-serif";
-    ctx.fillText(`Sell ${tailYears}yr`, barLeft + retainW + soldW / 2, barTop + barH / 2 - 3);
-    ctx.font = "10px -apple-system, sans-serif";
-    ctx.fillText(fmt(grossProceeds), barLeft + retainW + soldW / 2, barTop + barH / 2 + 10);
+  ctx.font = "bold 16px -apple-system, sans-serif";
+  if (soldW > 120) {
+    ctx.fillText(`Sold to HDB: ${tailYears} yr tail-end`, barLeft + retainW + soldW / 2, barTop + barH / 2 - 6);
+    ctx.font = "14px -apple-system, sans-serif";
+    ctx.fillText(fmt(grossProceeds), barLeft + retainW + soldW / 2, barTop + barH / 2 + 12);
+  } else if (soldW > 60) {
+    ctx.font = "bold 14px -apple-system, sans-serif";
+    ctx.fillText(`Sell ${tailYears}yr`, barLeft + retainW + soldW / 2, barTop + barH / 2 - 4);
+    ctx.font = "13px -apple-system, sans-serif";
+    ctx.fillText(fmt(grossProceeds), barLeft + retainW + soldW / 2, barTop + barH / 2 + 12);
   }
 
   // Timeline labels below bar
   ctx.fillStyle = "#1a1a1a";
-  ctx.font = "bold 11px -apple-system, sans-serif";
+  ctx.font = "bold 15px -apple-system, sans-serif";
   ctx.textAlign = "left";
-  ctx.fillText("Now", barLeft, barTop + barH + 14);
+  ctx.fillText("Now", barLeft, barTop + barH + 20);
   ctx.textAlign = "center";
-  ctx.fillText(`Year ${retainedLease}`, barLeft + retainW, barTop + barH + 14);
+  ctx.fillText(`Year ${retainedLease}`, barLeft + retainW, barTop + barH + 20);
   ctx.textAlign = "right";
-  ctx.fillText(`Year ${remainingLease}`, barRight, barTop + barH + 14);
+  ctx.fillText(`Year ${remainingLease}`, barRight, barTop + barH + 20);
 
   // Divider line
   ctx.strokeStyle = "#fff";
@@ -242,12 +242,12 @@ function drawBalasChart(remainingLease, retainedLease, marketValue, grossProceed
   ctx.stroke();
 
   // Explanation text below
-  ctx.fillStyle = "#333";
-  ctx.font = "11px -apple-system, sans-serif";
+  ctx.fillStyle = "#1a1a1a";
+  ctx.font = "15px -apple-system, sans-serif";
   ctx.textAlign = "center";
   ctx.fillText(
-    `The last ${tailYears} years of your ${remainingLease}-year lease are sold to HDB. You continue living in the flat for the first ${retainedLease} years.`,
-    displayW / 2, barTop + barH + 32
+    `The last ${tailYears} years of your ${remainingLease}-year lease are sold to HDB.`,
+    displayW / 2, barTop + barH + 44
   );
 }
 

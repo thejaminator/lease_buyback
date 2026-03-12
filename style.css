@@ -261,6 +261,22 @@ header h1 {
   color: #fff;
 }
 
+/* Chart */
+.chart-container {
+  width: 100%;
+  margin-bottom: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fafbfc;
+}
+
+.chart-container canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 /* Restrictions */
 .restrictions {
   background: #fef9e7;

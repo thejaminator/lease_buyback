@@ -431,8 +431,24 @@ header h1 {
 }
 
 /* Glossary */
-.glossary-section h2 {
-  border-bottom: 2px solid var(--border);
+.glossary-section details > summary {
+  list-style: none;
+  padding: 4px 0;
+  cursor: pointer;
+}
+
+.glossary-section details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.glossary-section details > summary::after {
+  content: " \25BC";
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.glossary-section details[open] > summary::after {
+  content: " \25B2";
 }
 
 .glossary {

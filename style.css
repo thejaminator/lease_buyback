@@ -297,6 +297,132 @@ header h1 {
   font-size: 0.75rem;
 }
 
+/* Eligibility Card */
+.eligibility-card {
+  border-left: 4px solid var(--primary);
+}
+
+.eligibility-grid {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.elig-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+
+.elig-item:last-child {
+  border-bottom: none;
+}
+
+.elig-label {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.elig-value {
+  color: var(--primary);
+  font-weight: 500;
+  text-align: right;
+}
+
+.age-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin-top: 12px;
+}
+
+.age-table caption {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-align: left;
+  padding: 8px 0 6px;
+  border-top: 1px solid var(--border);
+}
+
+.age-table th {
+  background: var(--bg);
+  padding: 8px 10px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--text-light);
+  border-bottom: 1px solid var(--border);
+}
+
+.age-table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.age-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.balas-details {
+  margin-top: 12px;
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+}
+
+.balas-details summary {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--primary);
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.balas-table {
+  margin-top: 8px;
+}
+
+.balas-table td,
+.balas-table th {
+  text-align: center;
+  padding: 5px 8px;
+}
+
+/* Glossary */
+.glossary-section h2 {
+  border-bottom: 2px solid var(--border);
+}
+
+.glossary {
+  margin: 0;
+}
+
+.glossary dt {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--primary);
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.glossary dt:first-child {
+  border-top: none;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.glossary dd {
+  font-size: 0.85rem;
+  color: var(--text);
+  margin-left: 0;
+  margin-top: 2px;
+  padding-bottom: 4px;
+}
+
 /* T&C Section */
 .tnc-section {
   background: var(--card-bg);

@@ -103,7 +103,7 @@ function getLeaseOptions(youngestAge) {
   else minYears = 30; // 65-69
 
   const options = [];
-  for (let y = minYears; y <= 35; y += 5) {
+  for (let y = minYears; y <= 99; y += 5) {
     options.push(y);
   }
   return options;
@@ -379,9 +379,10 @@ mannerHoldingSelect.addEventListener("change", () => {
   ticShareField.classList.toggle("hidden", mannerHoldingSelect.value !== "tic");
 });
 
-// --- Update lease options on age change ---
+// --- Update lease options on age or remaining lease change ---
 document.getElementById("owner-1-age").addEventListener("input", updateLeaseOptions);
 document.getElementById("owner-2-age").addEventListener("input", updateLeaseOptions);
+document.getElementById("remaining-lease").addEventListener("input", updateLeaseOptions);
 
 function updateLeaseOptions() {
   const age1 = parseInt(document.getElementById("owner-1-age").value) || 0;
@@ -399,7 +400,17 @@ function updateLeaseOptions() {
     return;
   }
 
-  const options = getLeaseOptions(youngestAge);
+  const remainingLease = parseInt(document.getElementById("remaining-lease").value) || 99;
+  const allOptions = getLeaseOptions(youngestAge);
+  // Filter out options that exceed the remaining lease (must be strictly less)
+  const options = allOptions.filter(y => y < remainingLease);
+
+  if (options.length === 0) {
+    leaseRetainSelect.innerHTML = '<option value="">Remaining lease too short</option>';
+    hint.textContent = "";
+    return;
+  }
+
   const minYears = options[0];
   const coveredUntilMin = youngestAge + minYears;
 
